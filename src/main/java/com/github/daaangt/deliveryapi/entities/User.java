@@ -1,13 +1,13 @@
 package com.github.daaangt.deliveryapi.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name = "users_table")
 public class User implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -17,16 +17,34 @@ public class User implements Serializable {
     private String name;
     private String email;
     private String password;
+    private String address;
+
+    @OneToMany(mappedBy = "client")
+    private List<Order> orders = new ArrayList<>();
 
     public User() {
+
     }
 
-    public User(Long id, String name, String email, String password) {
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public User(Long id, String name, String email, String password, String address) {
         super();
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.address = address;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public Long getId() {
