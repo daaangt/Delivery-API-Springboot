@@ -26,6 +26,19 @@ public class UserService {
         return repository.save(obj);
     }
 
+    public User update(Long id, User userDetails) {
+        User updateUser = findById(id);
+
+        updateUser.setAddress(userDetails.getAddress());
+        updateUser.setEmail(userDetails.getEmail());
+        updateUser.setName(userDetails.getName());
+        updateUser.setPassword(userDetails.getPassword());
+
+        repository.save(updateUser);
+
+        return updateUser;
+    }
+
     public void destroy(Long id) {
         repository.deleteById(id);
     }
