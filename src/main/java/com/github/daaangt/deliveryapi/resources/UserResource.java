@@ -32,8 +32,13 @@ public class UserResource {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+    @GetMapping(value = "/name/{name}")
+    public User findByName(@PathVariable String name) {
+        return repository.findByName(name);
+    }
+
     @GetMapping(value = "/{id}")
-    public ResponseEntity findById(@PathVariable Long id) {
+    public ResponseEntity<User> findById(@PathVariable Long id) {
         return repository.findById(id)
                 .map(record -> ResponseEntity.ok().body(record))
                 .orElse(ResponseEntity.notFound().build());
