@@ -1,8 +1,7 @@
 package com.github.daaangt.deliveryapi.resources;
 
 import com.github.daaangt.deliveryapi.entities.Order;
-import com.github.daaangt.deliveryapi.services.OrderService;
-import com.github.daaangt.deliveryapi.services.UserService;
+import com.github.daaangt.deliveryapi.repositories.OrderRepository;
 
 import java.util.List;
 
@@ -20,17 +19,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class OrderResource {
 
     @Autowired
-    private OrderService service;
+    private OrderRepository repository;
 
     @GetMapping
-    public ResponseEntity<List<Order>> findAll() {
-        List<Order> list = service.findAll();
-        return ResponseEntity.ok().body(list);
+    public List<Order> findAll() {
+        return repository.findAll();
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Order> findById(@PathVariable Long id) {
-        Order obj = service.findById(id);
-        return ResponseEntity.ok().body(obj);
+    public ResponseEntity findById(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElse(ResponseEntity.notFound().build());
     }
 }

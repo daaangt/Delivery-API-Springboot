@@ -4,7 +4,7 @@ import com.github.daaangt.deliveryapi.entities.Product;
 
 import java.util.List;
 
-import com.github.daaangt.deliveryapi.services.ProductService;
+import com.github.daaangt.deliveryapi.repositories.ProductRepository;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,17 +19,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ProductResource {
 
     @Autowired
-    private ProductService service;
+    private ProductRepository repository;
 
     @GetMapping
-    public ResponseEntity<List<Product>> findAll() {
-        List<Product> list = service.findAll();
-        return ResponseEntity.ok().body(list);
+    public List<Product> findAll() {
+        return repository.findAll();
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Product> findById(@PathVariable Long id) {
-        Product obj = service.findById(id);
-        return ResponseEntity.ok().body(obj);
+    public ResponseEntity findById(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElse(ResponseEntity.notFound().build());
     }
 }
