@@ -1,59 +1,61 @@
 package com.github.daaangt.deliveryapi.resources;
 
 import com.github.daaangt.deliveryapi.entities.User;
-import com.github.daaangt.deliveryapi.services.UserService;
+import com.github.daaangt.deliveryapi.repositories.UserRepository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/users")
 public class UserResource {
-
     @Autowired
-    private UserService service;
+    private UserRepository repository;
 
     @GetMapping
-    public ResponseEntity<List<User>> findAll() {
-        List<User> list = service.findAll();
-        return ResponseEntity.ok().body(list);
-    }
-
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long id) {
-        User obj = service.findById(id);
-        return ResponseEntity.ok().body(obj);
+    public List<User> findAll() {
+        return repository.findAll();
     }
 
     @PostMapping
-    public ResponseEntity<User> store(@RequestBody User obj) {
-        obj = service.store(obj);
+    public ResponseEntity<User> store(@Valid @RequestBody User obj) {
+        repository.save(obj);
 
-        URI uri = ServletUriComponentsBuilder.
-                fromCurrentRequest().
-                path("/{id}").
-                buildAndExpand(obj.getId()).
-                toUri();
+        System.out.println("A new User was created");
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
 
-        return ResponseEntity.created(uri).body(obj);
+    @GetMapping(value = "/{id}")
+    public ResponseEntity findById(@PathVariable Long id) {
+        return repository.findById(id)
+                .map(record -> ResponseEntity.ok().body(record))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User userDetails) {
-        User obj = service.update(id, userDetails);
-        return ResponseEntity.ok(obj);
+    public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User userDetails) {
+        System.out.println("An User was updated");
+        return repository.findById(id)
+                .map(record -> {
+                    record.setAddress(userDetails.getAddress());
+                    record.setEmail(userDetails.getEmail());
+                    record.setName(userDetails.getName());
+                    record.setPassword(userDetails.getPassword());
+
+                    return ResponseEntity.ok().body(repository.save(record));
+                }).orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping(value = "/{id}")
-    public ResponseEntity<String> destroy(@PathVariable Long id) {
-        service.destroy(id);
-        return ResponseEntity.noContent().build();
+    public void destroy(@PathVariable Long id) {
+        System.out.println("Deleted an User: ");
+        repository.deleteById(id);
     }
 }
