@@ -1,5 +1,7 @@
 package com.github.daaangt.deliveryapi.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,8 +18,10 @@ public class User implements Serializable {
     private Long id;
     private String name;
     private String email;
-    private String password;
     private String address;
+
+    @JsonIgnore
+    private String password;
 
     @OneToMany(mappedBy = "client")
     private List<Order> orders = new ArrayList<>();
