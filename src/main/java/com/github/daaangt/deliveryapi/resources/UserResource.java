@@ -27,8 +27,6 @@ public class UserResource {
     @PostMapping
     public ResponseEntity<User> store(@Valid @RequestBody User obj) {
         repository.save(obj);
-
-        System.out.println("A new User was created");
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
@@ -46,7 +44,6 @@ public class UserResource {
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<User> update(@PathVariable Long id, @Valid @RequestBody User userDetails) {
-        System.out.println("An User was updated");
         return repository.findById(id)
                 .map(record -> {
                     record.setAddress(userDetails.getAddress());
@@ -60,7 +57,6 @@ public class UserResource {
 
     @DeleteMapping(value = "/{id}")
     public void destroy(@PathVariable Long id) {
-        System.out.println("Deleted an User: ");
         repository.deleteById(id);
     }
 }
